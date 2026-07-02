@@ -5,8 +5,7 @@ from bulk_trash import list_all_ids, preview_subjects, batch_trash
 
 # Senders/domains to NEVER trash — add your important ones (bank, employer, etc.).
 ALLOWLIST_SENDERS = [
-    # "chase.com",
-    # "your-employer.com",
+    "walgreens.com",
 ]
 
 # Terms that suggest transactional/important mail — excluded from trashing.
@@ -14,6 +13,7 @@ ALLOWLIST_SENDERS = [
 PROTECT_TERMS = [
     "receipt", "invoice", "statement", "payment", "refund",
     "verification", "password", "tax",
+    "prescription", "refill", "pharmacy",
     '"security alert"', '"order confirmation"', '"shipping confirmation"',
 ]
 

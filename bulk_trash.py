@@ -51,6 +51,17 @@ def batch_trash(service, ids):
         ).execute()
         print(f"  Trashed {start + len(chunk):,} / {len(ids):,}")
 
+def batch_archive(service, ids):
+    """Remove messages from the Inbox (archive) in batches of 1000.
+    Reversible, and NOTHING is deleted — mail stays in All Mail, searchable."""
+    for start in range(0, len(ids), 1000):
+        chunk = ids[start:start + 1000]
+        service.users().messages().batchModify(
+            userId="me",
+            body={"ids": chunk, "removeLabelIds": ["INBOX"]},
+        ).execute()
+        print(f"  Archived {start + len(chunk):,} / {len(ids):,}")
+
 
 # --- Safety configuration ---
 DRY_RUN = True
