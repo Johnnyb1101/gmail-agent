@@ -4,6 +4,8 @@ Designed to be run by Windows Task Scheduler. Logs each run to weekly_run.log.
 """
 
 import os
+import sys
+import traceback
 from datetime import datetime
 
 # Make all relative paths (credentials.json, token.json, .env) resolve relative
@@ -33,6 +35,10 @@ if __name__ == "__main__":
         if ids:
             batch_trash(service, ids)
         log(f"Trashed {len(ids)} promotional/social emails.")
-    except Exception as error:
-        log(f"ERROR: {error}")
+    except Exception:
+        # Full stack trace, not just the message — shows WHERE it failed.
+        log(f"ERROR:\n{traceback.format_exc()}")
+        log("--- Weekly run FAILED ---")
+        # Non-zero exit code tells Task Scheduler this run failed.
+        sys.exit(1)
     log("--- Weekly run finished ---")
