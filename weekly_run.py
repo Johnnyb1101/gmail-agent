@@ -14,9 +14,23 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 from auth import get_gmail_service
 from bulk_trash import list_all_ids, batch_trash
+from sweep import PROTECT_TERMS, ALLOWLIST_SENDERS
 
-QUERY = "category:promotions OR category:social"
 LOG_FILE = "weekly_run.log"
+
+# Sanity cap: normal weekly volume is a handful of emails. If the query ever
+# matches more than this, assume something is wrong and refuse to trash.
+MAX_TRASH = 500
+
+
+def build_query():
+    """Promotions/Social mail, minus the same protections the sweeps use."""
+    # Parentheses matter: exclusions must apply to BOTH categories,
+    # not just the second one.
+    parts = ["(category:promotions OR category:social)"]
+    parts += [f"-{term}" for term in PROTECT_TERMS]      # exclude transactional terms
+    parts += [f"-from:{s}" for s in ALLOWLIST_SENDERS]   # exclude trusted senders
+    return " ".join(parts)
 
 
 def log(message):
@@ -31,7 +45,10 @@ if __name__ == "__main__":
     log("--- Weekly run started ---")
     try:
         service = get_gmail_service()
-        ids = list_all_ids(service, QUERY)
+        ids = list_all_ids(service, build_query())
+        if len(ids) > MAX_TRASH:
+            log(f"SAFETY STOP: matched {len(ids)} emails, cap is {MAX_TRASH}. Nothing trashed.")
+            sys.exit(1)
         if ids:
             batch_trash(service, ids)
         log(f"Trashed {len(ids)} promotional/social emails.")
