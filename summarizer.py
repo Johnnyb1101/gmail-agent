@@ -47,6 +47,11 @@ def analyze_email(subject, snippet):
         elif line.startswith("SUMMARY:"):
             summary = line.split(":", 1)[1].strip()
 
+    # Never trust the model's raw output: if it's not one of OUR
+    # categories, fall back to the safe default.
+    if category not in CATEGORIES:
+        category = "Other"
+
     return {"category": category, "summary": summary}
 
 
