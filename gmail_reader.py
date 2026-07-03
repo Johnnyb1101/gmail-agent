@@ -35,8 +35,9 @@ def read_recent_emails(service, max_results=10):
             .execute()
         )
 
-        # THIS is what was missing — save what we fetched into the list.
-        headers = full["payload"]["headers"]
+        # .get() with defaults: some messages (drafts, chat imports) lack a
+        # payload or headers — degrade to blanks instead of crashing the run.
+        headers = full.get("payload", {}).get("headers", [])
         emails.append(
             {
                 "id": message["id"],

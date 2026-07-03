@@ -35,7 +35,8 @@ def preview_subjects(service, ids, n=10):
             )
             .execute()
         )
-        headers = full["payload"]["headers"]
+        # Defensive: not every message has a payload/headers (drafts, chat imports).
+        headers = full.get("payload", {}).get("headers", [])
         subject = next((h["value"] for h in headers if h["name"] == "Subject"), "(no subject)")
         sender = next((h["value"] for h in headers if h["name"] == "From"), "(no sender)")
         print(f"  - {sender[:38]:38} | {subject[:60]}")
