@@ -40,6 +40,6 @@ def get_gmail_service():
 # It is a quick self-test to prove the connection works.
 if __name__ == "__main__":
     service = get_gmail_service()
-    profile = service.users().getProfile(userId="me").execute()
+    profile = service.users().getProfile(userId="me").execute(num_retries=3)
     print(f"Logged in as {profile['emailAddress']}")
     print(f"Total messages in mailbox: {profile['messagesTotal']}")

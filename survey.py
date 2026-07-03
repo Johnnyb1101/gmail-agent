@@ -12,7 +12,7 @@ def count_matching(service, query):
             service.users()
             .messages()
             .list(userId="me", q=query, maxResults=500, pageToken=page_token)
-            .execute()
+            .execute(num_retries=3)
         )
         total += len(response.get("messages", []))
         page_token = response.get("nextPageToken")
@@ -25,7 +25,7 @@ if __name__ == "__main__":
     service = get_gmail_service()
 
     # The true total comes from the profile, not a search estimate.
-    profile = service.users().getProfile(userId="me").execute()
+    profile = service.users().getProfile(userId="me").execute(num_retries=3)
     print("\n=== Inbox backlog survey ===")
     print(f"{'Total mailbox':22} {profile['messagesTotal']:>7,}")
 

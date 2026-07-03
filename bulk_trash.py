@@ -12,7 +12,7 @@ def list_all_ids(service, query):
             service.users()
             .messages()
             .list(userId="me", q=query, maxResults=500, pageToken=page_token)
-            .execute()
+            .execute(num_retries=3)
         )
         ids.extend(m["id"] for m in response.get("messages", []))
         page_token = response.get("nextPageToken")
@@ -33,7 +33,7 @@ def preview_subjects(service, ids, n=10):
                 format="metadata",
                 metadataHeaders=["Subject", "From"],
             )
-            .execute()
+            .execute(num_retries=3)
         )
         # Defensive: not every message has a payload/headers (drafts, chat imports).
         headers = full.get("payload", {}).get("headers", [])
@@ -49,7 +49,7 @@ def batch_trash(service, ids):
         service.users().messages().batchModify(
             userId="me",
             body={"ids": chunk, "addLabelIds": ["TRASH"]},
-        ).execute()
+        ).execute(num_retries=3)
         print(f"  Trashed {start + len(chunk):,} / {len(ids):,}")
 
 def batch_archive(service, ids):
@@ -60,7 +60,7 @@ def batch_archive(service, ids):
         service.users().messages().batchModify(
             userId="me",
             body={"ids": chunk, "removeLabelIds": ["INBOX"]},
-        ).execute()
+        ).execute(num_retries=3)
         print(f"  Archived {start + len(chunk):,} / {len(ids):,}")
 
 

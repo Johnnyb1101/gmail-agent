@@ -16,7 +16,7 @@ def read_recent_emails(service, max_results=10):
         service.users()
         .messages()
         .list(userId="me", maxResults=max_results)
-        .execute()
+        .execute(num_retries=3)
     )
     messages = response.get("messages", [])
 
@@ -32,7 +32,7 @@ def read_recent_emails(service, max_results=10):
                 format="metadata",
                 metadataHeaders=["From", "Subject"],
             )
-            .execute()
+            .execute(num_retries=3)
         )
 
         # .get() with defaults: some messages (drafts, chat imports) lack a
