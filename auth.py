@@ -2,6 +2,7 @@
 
 import os.path
 
+from google.auth.exceptions import RefreshError
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -12,8 +13,12 @@ from googleapiclient.discovery import build
 # Deliberately never request the delete scope, so a permanent delete is not possible even if code had a bug.
 SCOPES = ["https://www.googleapis.com/auth/gmail.modify"]
 
-def get_gmail_service():
-    """Return an authenticated Gmail API service, loggin in if necessary."""
+def get_gmail_service(interactive=True):
+    """Return an authenticated Gmail API service, logging in if necessary.
+
+    interactive=False (unattended runs, e.g. Task Scheduler) raises a clear
+    error instead of opening a browser nobody is there to click.
+    """
     creds = None
 
     # token.json holds your access after the first successful login.
@@ -23,10 +28,20 @@ def get_gmail_service():
     # If no valid saved login, get one.
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
-            # Saved login expired but can be refreshed silently (no browser).
-            creds.refresh(Request())
-        else:
-            # First run: open a browser so you can grant access.
+            try:
+                # Saved login expired but can be refreshed silently (no browser).
+                creds.refresh(Request())
+            except RefreshError:
+                # Refresh token revoked/expired — fall through to a full re-login.
+                creds = None
+
+        if not creds or not creds.valid:
+            if not interactive:
+                raise RuntimeError(
+                    "Gmail login is invalid and this is an unattended run. "
+                    "Run `python auth.py` once to re-authorize in a browser."
+                )
+            # Open a browser so you can grant access.
             flow = InstalledAppFlow.from_client_secrets_file("credentials.json", SCOPES)
             creds = flow.run_local_server(port=0)
 

@@ -44,7 +44,7 @@ def log(message):
 if __name__ == "__main__":
     log("--- Weekly run started ---")
     try:
-        service = get_gmail_service()
+        service = get_gmail_service(interactive=False)
         ids = list_all_ids(service, build_query())
         if len(ids) > MAX_TRASH:
             log(f"SAFETY STOP: matched {len(ids)} emails, cap is {MAX_TRASH}. Nothing trashed.")
