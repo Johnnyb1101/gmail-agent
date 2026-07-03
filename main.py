@@ -4,11 +4,11 @@ from auth import get_gmail_service
 from gmail_reader import read_recent_emails
 from summarizer import analyze_email
 from labeler import get_or_create_label, apply_label
-from trasher import trash_email   # <-- new
+from trasher import trash_email
+from config import DRY_RUN
 
 
 # --- Safety configuration ---
-DRY_RUN = True
 BULK_CATEGORIES = {"Promotions", "Social", "Newsletter"}  # only these are trash candidates
 
 

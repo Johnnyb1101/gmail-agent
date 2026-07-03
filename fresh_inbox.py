@@ -6,12 +6,10 @@
 
 from auth import get_gmail_service
 from bulk_trash import list_all_ids, preview_subjects, batch_trash, batch_archive
-from sweep import PROTECT_TERMS, ALLOWLIST_SENDERS
+from config import DRY_RUN, PROTECT_TERMS, ALLOWLIST_SENDERS
 
 # Keep mail newer than this in the inbox; archive older. "0d" would archive everything.
 ARCHIVE_OLDER_THAN = "1m"
-
-DRY_RUN = True
 
 
 def marketing_query():

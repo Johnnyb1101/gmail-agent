@@ -2,20 +2,7 @@
 
 from auth import get_gmail_service
 from bulk_trash import list_all_ids, preview_subjects, batch_trash
-
-# Senders/domains to NEVER trash — add your important ones (bank, employer, etc.).
-ALLOWLIST_SENDERS = [
-    "walgreens.com",
-]
-
-# Terms that suggest transactional/important mail — excluded from trashing.
-# Multi-word terms are quoted so Gmail treats them as phrases.
-PROTECT_TERMS = [
-    "receipt", "invoice", "statement", "payment", "refund",
-    "verification", "password", "tax",
-    "prescription", "refill", "pharmacy",
-    '"security alert"', '"order confirmation"', '"shipping confirmation"',
-]
+from config import DRY_RUN, PROTECT_TERMS, ALLOWLIST_SENDERS
 
 
 def build_query():
@@ -24,9 +11,6 @@ def build_query():
     parts += [f"-{term}" for term in PROTECT_TERMS]      # exclude transactional terms
     parts += [f"-from:{s}" for s in ALLOWLIST_SENDERS]   # exclude trusted senders
     return " ".join(parts)
-
-
-DRY_RUN = True
 
 
 if __name__ == "__main__":

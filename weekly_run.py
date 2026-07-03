@@ -14,13 +14,9 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 from auth import get_gmail_service
 from bulk_trash import list_all_ids, batch_trash
-from sweep import PROTECT_TERMS, ALLOWLIST_SENDERS
+from config import PROTECT_TERMS, ALLOWLIST_SENDERS, MAX_TRASH
 
 LOG_FILE = "weekly_run.log"
-
-# Sanity cap: normal weekly volume is a handful of emails. If the query ever
-# matches more than this, assume something is wrong and refuse to trash.
-MAX_TRASH = 500
 
 
 def build_query():

@@ -65,7 +65,7 @@ def batch_archive(service, ids):
 
 
 # --- Safety configuration ---
-DRY_RUN = True
+from config import DRY_RUN
 QUERY = "category:promotions OR category:social"
 
 
